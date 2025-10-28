@@ -34,6 +34,15 @@ async def on_ready():
 async def on_command_error(ctx, error):
     logger.error(f"Error en el comando '{ctx.command}': {str(error)}")
 
+@bot.event
+async def on_message(message):
+    logger.info(f"Mensaje recibido de {message.author}: {message.content}")
+    
+    if message.author == bot.user:
+        return
+    await bot.process_commands(message)
+    
+
 async def load_cogs():
     # Verify cogs directory exists
     cogs_dir = "./cogs"
