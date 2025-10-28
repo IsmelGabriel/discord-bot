@@ -1,0 +1,17 @@
+2025-10-28 11:26:02 | INFO | Loaded extension: admin.py
+2025-10-28 11:26:02 | INFO | Loaded extension: command_error.py
+2025-10-28 11:26:02 | INFO | Loaded extension: fun.py
+2025-10-28 11:26:02 | INFO | Loaded extension: general.py
+2025-10-28 11:26:02 | ERROR | Failed to load extension __init__.py: Extension 'cogs.__init__' has no 'setup' function.
+2025-10-28 11:26:06 | INFO | ✅ Bot conectado como ZioTiki bot#5524
+2025-10-28 11:26:06 | INFO | Bot ID: 1318670732380864554
+2025-10-28 11:48:44 | ERROR | Error en el comando 'None': Command "hola" is not found
+2025-10-28 11:58:11 | INFO | Bot shutdown by user
+2025-10-28 11:58:15 | INFO | Loaded extension: admin.py
+2025-10-28 11:58:15 | INFO | Loaded extension: command_error.py
+2025-10-28 11:58:15 | INFO | Loaded extension: fun.py
+2025-10-28 11:58:15 | INFO | Loaded extension: general.py
+2025-10-28 11:58:15 | ERROR | Failed to load extension __init__.py: Extension 'cogs.__init__' has no 'setup' function.
+2025-10-28 11:58:19 | INFO | Bot conectado como ZioTiki bot#5524
+2025-10-28 11:58:19 | INFO | Bot ID: 1318670732380864554
+2025-10-28 12:00:14 | ERROR | Error en el comando 'mute': member is a required argument that is missing.
