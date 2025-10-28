@@ -23,5 +23,15 @@ class Admin(commands.Cog):
         await member.add_roles(muted_role)
         await ctx.send(f"{member.mention} ha sido silenciado.")
         
+    @commands.command(name="unmute", help="Quita el silencio a un miembro del servidor")
+    @commands.has_permissions(manage_roles=True)
+    async def unmute(self, ctx, member: commands.MemberConverter):
+        muted_role = discord.utils.get(ctx.guild.roles, name="MemMuted")
+        if muted_role in member.roles:
+            await member.remove_roles(muted_role)
+            await ctx.send(f"{member.mention} ha sido desilenciado.")
+        else:
+            await ctx.send(f"{member.mention} no está silenciado.")
+        
 async def setup(bot):
     await bot.add_cog(Admin(bot))
