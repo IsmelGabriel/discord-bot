@@ -1,2 +1,8 @@
 config.py
 logs/*
+utils/__pycache__/
+cogs/__pycache__/
+data/__pycache__/
+__pycache__/
+.venv/
+.env
