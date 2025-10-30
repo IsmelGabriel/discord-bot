@@ -50,15 +50,16 @@ async def on_message(message):
         mensaje=message.content
     )
     
-    if bot.user.mentioned_in(message):
-        prompt = message.content.replace(f"<@{bot.user.id}>", "").strip()
+    if bot.user in message.mentions and not message.mention_everyone:
+        prompt = message.content.replace(f"<@{bot.user.id}>", "").replace(f"<@!{bot.user.id}>", "").strip()
         if not prompt:
-            await message.channel.send("Hello! How can I assist you today?")
+            await message.channel.send("👋 Hello! How can I assist you today?")
         else:
             await message.channel.typing()
             server_id = message.guild.id if message.guild else 0
             response = generate_response(server_id, message.author.id, prompt)
             await message.channel.send(response)
+
 
     await bot.process_commands(message)
 
