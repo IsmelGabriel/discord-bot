@@ -5,10 +5,10 @@ import os
 import re
 
 # 🔧 Variables de entorno
-DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_HOST = os.getenv("DB_HOST", "dpg-d41dqo9r0fns73cbvt00-a")
 DB_NAME = os.getenv("DB_NAME", "discord_logs")
-DB_USER = os.getenv("DB_USER", "root")
-DB_PASS = os.getenv("DB_PASS", "")
+DB_USER = os.getenv("DB_USER", "ziotiki")
+DB_PASS = os.getenv("DB_PASS", "HqMzPBB4fzRo1ZTN7LCBJM4uXfKsfsHq")
 
 # 🔍 Detecta tipo de contenido en el mensaje
 def detect_content_type(message: str):
@@ -36,7 +36,7 @@ class MySQLHandler(logging.Handler):
             self.cursor = self.conn.cursor()
             print("✅ Conectado a MySQL correctamente.")
         except mysql.connector.Error as err:
-            print(f"❌ Error al conectar con MySQL: {err}")
+            print(f"❌ Error al conectar con la base de datos: {err}")
 
     def emit(self, record):
         try:
@@ -59,7 +59,7 @@ class MySQLHandler(logging.Handler):
             self.cursor.execute(query, values)
             self.conn.commit()
         except Exception as e:
-            print(f"⚠️ Error al guardar log en MySQL: {e}")
+            print(f"⚠️ Error al guardar log en la base de datos: {e}")
 
 # 🧩 Configurar el logger
 def setup_logger():
