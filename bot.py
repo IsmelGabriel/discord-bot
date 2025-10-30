@@ -5,6 +5,7 @@ import os
 import sys
 import logging
 from utils.logger_db import guardar_log
+from utils.ia import generate_response
 import webserver
 
 # Get token from os environment variable for security
@@ -48,6 +49,15 @@ async def on_message(message):
         author_name=str(message.author),
         mensaje=message.content
     )
+    
+    if bot.user.mentioned_in(message):
+        prompt = message.content.replace(f"<@{bot.user.id}>", "").strip()
+        if not prompt:
+            await message.channel.send("Hello! How can I assist you today?")
+        else:
+            await message.channel.typing()
+            response = generate_response(message.author.id, prompt)
+            await message.channel.send(response)
 
     await bot.process_commands(message)
 

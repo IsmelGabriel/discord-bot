@@ -6,6 +6,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
 def generate_response(user_id: int, prompt: str) -> str:
+    """Generates a response from the AI model based on user input and conversation history."""
     # Save the user's message
     save_message(user_id, "user", prompt)
 
