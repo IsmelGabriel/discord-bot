@@ -27,7 +27,7 @@ class Admin(commands.Cog):
         else:
             await ctx.send(f"{member.mention} isn't muted.")
         
-    @commands.commmand(name="kick", help="Kick a member from server")
+    @commands.command(name="kick", help="Kick a member from server")
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: commands.MemberConverter, *, reason=None):
         await member.kick(reason=reason)
