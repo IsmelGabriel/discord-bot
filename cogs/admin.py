@@ -4,12 +4,6 @@ from discord.ext import commands
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    @commands.command(name="shutdown", help="Apaga el bot (solo para el propietario del bot)")
-    @commands.is_owner()
-    async def shutdown(self, ctx):
-        await ctx.send("Apagando el bot...")
-        await self.bot.close()
         
     @commands.command(name="mute", help="Silencia a un miembro del servidor")
     @commands.has_permissions(manage_roles=True)
