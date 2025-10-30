@@ -1,83 +1,62 @@
-import logging
-import mysql.connector
-from datetime import datetime
 import os
 import re
+import psycopg2
+from datetime import datetime
 
-# 🔧 Variables de entorno
-DB_HOST = os.getenv("DB_HOST", "dpg-d41dqo9r0fns73cbvt00-a")
-DB_NAME = os.getenv("DB_NAME", "discord_logs")
-DB_USER = os.getenv("DB_USER", "ziotiki")
-DB_PASS = os.getenv("DB_PASS", "HqMzPBB4fzRo1ZTN7LCBJM4uXfKsfsHq")
+# Conexión a la base de datos en Render usando variables de entorno
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASS = os.getenv("DB_PASS")
+DB_PORT = os.getenv("DB_PORT", 5432)
 
-# 🔍 Detecta tipo de contenido en el mensaje
-def detect_content_type(message: str):
-    if not message or message.strip() == "":
-        return "vacio"
-    if re.search(r"(https?:\/\/[^\s]+(\.png|\.jpg|\.jpeg|\.gif))", message, re.IGNORECASE):
+
+
+def conectar():
+    try:
+        return psycopg2.connect(
+            host=DB_HOST,
+            dbname=DB_NAME,
+            user=DB_USER,
+            password=DB_PASS,
+            port=DB_PORT
+        )
+    except Exception as e:
+        print(f"[ERROR] No se pudo conectar a la base de datos: {e}")
+        return None
+
+
+def detectar_tipo_contenido(mensaje):
+    """Detecta si el mensaje contiene imagen, video o link."""
+    if re.search(r'(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))', mensaje):
         return "imagen"
-    if re.search(r"(https?:\/\/[^\s]+(\.mp4|\.mov|\.avi|\.webm))", message, re.IGNORECASE):
+    elif re.search(r'(https?:\/\/.*\.(?:mp4|mov|avi|mkv))', mensaje):
         return "video"
-    if re.search(r"(https?:\/\/[^\s]+)", message):
+    elif re.search(r'https?:\/\/', mensaje):
         return "link"
-    return "texto"
+    elif mensaje.strip() == "":
+        return "vacío"
+    else:
+        return "texto"
 
-# 🧱 Clase para guardar logs en MySQL
-class MySQLHandler(logging.Handler):
-    def __init__(self):
-        super().__init__()
-        try:
-            self.conn = mysql.connector.connect(
-                host=DB_HOST,
-                user=DB_USER,
-                password=DB_PASS,
-                database=DB_NAME
-            )
-            self.cursor = self.conn.cursor()
-            print("✅ Conectado a MySQL correctamente.")
-        except mysql.connector.Error as err:
-            print(f"❌ Error al conectar con la base de datos: {err}")
 
-    def emit(self, record):
-        try:
-            log_data = record.msg if isinstance(record.msg, dict) else {}
+def guardar_log(level, server_id, author_id, author_name, mensaje):
+    conn = conectar()
+    if not conn:
+        return
 
-            level = record.levelname
-            server_id = log_data.get("server_id")
-            author_id = log_data.get("author_id")
-            author_name = log_data.get("author_name")
-            message = log_data.get("message", "")
-            content_type = detect_content_type(message)
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    tipo = detectar_tipo_contenido(mensaje)
+    fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-            query = """
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
                 INSERT INTO logs (level, server_id, author_id, author_name, message, content_type, timestamp)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """
-            values = (level, server_id, author_id, author_name, message, content_type, timestamp)
-
-            self.cursor.execute(query, values)
-            self.conn.commit()
-        except Exception as e:
-            print(f"⚠️ Error al guardar log en la base de datos: {e}")
-
-# 🧩 Configurar el logger
-def setup_logger():
-    logger = logging.getLogger("bot_logger")
-    logger.setLevel(logging.INFO)
-
-    # 📦 Muestra los logs en consola
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(logging.Formatter(
-        "%(asctime)s - %(levelname)s - %(message)s"
-    ))
-
-    # 💾 Guarda los logs en MySQL
-    mysql_handler = MySQLHandler()
-
-    # Evita agregar múltiples handlers duplicados
-    if not logger.hasHandlers():
-        logger.addHandler(console_handler)
-        logger.addHandler(mysql_handler)
-
-    return logger
+                VALUES (%s, %s, %s, %s, %s, %s, %s);
+            """, (level, server_id, author_id, author_name, mensaje, tipo, fecha_hora))
+            conn.commit()
+            print(f"[{fecha_hora}] ({level}) {author_name}: {mensaje} [{tipo}]")
+    except Exception as e:
+        print(f"[ERROR] No se pudo guardar el log: {e}")
+    finally:
+        conn.close()
