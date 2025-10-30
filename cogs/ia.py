@@ -6,17 +6,15 @@ class IA(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="ask", help="Ask a question to the AI.")
+    @commands.command(name="ask", help="Talk to the AI.")
     async def ask(self, ctx, *, question: str):
         await ctx.typing()
-        response = generate_response(ctx.author.id, question)
+        server_id = ctx.guild.id if ctx.guild else 0
+        response = generate_response(server_id, ctx.author.id, question)
         await ctx.send(response)
 
-    @commands.command(name="reset", help="Reset conversation memory.")
+    @commands.command(name="reset", help="Clear your conversation memory with the AI.")
     async def reset(self, ctx):
-        clear_history(ctx.author.id)
-        await ctx.send("Your conversation memory has been reset.")
-
-async def setup(bot):
-    await bot.add_cog(IA(bot))
-    
+        server_id = ctx.guild.id if ctx.guild else 0
+        clear_history(server_id, ctx.author.id)
+        await ctx.send("🧠 Memory cleared successfully.")
