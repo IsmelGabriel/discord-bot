@@ -6,7 +6,7 @@ conn = psycopg2.connect(
     host=os.getenv("DB_HOST", "dpg-d41dqo9r0fns73cbvt00-a"),  # cambia si tu host es distinto
     dbname=os.getenv("DB_NAME", "discord_logs"),
     user=os.getenv("DB_USER", "ziotiki"),
-    password=os.getenv("DB_PASS", "TU_CONTRASEÑA_AQUÍ"),
+    password=os.getenv("DB_PASS", "HqMzPBB4fzRo1ZTN7LCBJM4uXfKsfsHq"),
     port=5432
 )
 
