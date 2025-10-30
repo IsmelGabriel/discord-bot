@@ -9,9 +9,12 @@ def generate_response(prompt: str) -> str:
     response = ia_client.chat.completions.create(
         model="gpt-4.1-mini",
         messages=[
-            {"role": "system", "content": { "Your name is ZioTiki Bot.",
+            {"role": "system", "content": (
+                                            "Your name is ZioTiki Bot.",
                                             "You are a helpful assistant in discord with multiple users.",
-                                            "Provide clear and concise answers to user questions."}},
+                                            "Provide clear and concise answers to user questions."
+                                            )
+             },
             {"role": "user", "content": prompt}
         ],
         max_tokens=150,
