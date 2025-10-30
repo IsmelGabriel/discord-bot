@@ -4,7 +4,7 @@ import asyncio
 import os
 import sys
 import logging
-from utils.logger import setup_logger
+from utils.logger_db import setup_logger
 import webserver
 
 # Get token from os environment variable for security
@@ -27,8 +27,6 @@ intents.members = True  # Enable member intents
 
 bot = commands.Bot(command_prefix="=", intents=intents)
 
-logger = setup_logger()
-
 @bot.event
 async def on_ready():
     logger.info(f"Bot conectado como {bot.user}")
@@ -38,14 +36,25 @@ async def on_ready():
 async def on_command_error(ctx, error):
     logger.error(f"Error en el comando '{ctx.command}': {str(error)}")
 
+logger = setup_logger()
+
 @bot.event
 async def on_message(message):
-    logger.info(f"Mensaje recibido de {message.author}: {message.content}")
-    
-    if message.author == bot.user:
+    if message.author.bot:
         return
+
+    log_data = {
+        "server_id": message.guild.id if message.guild else None,
+        "author_id": message.author.id,
+        "author_name": str(message.author),
+        "message": message.content
+    }
+
+    # Guarda en MySQL y muestra en consola
+    logger.info(log_data)
+
     await bot.process_commands(message)
-    
+
 
 async def load_cogs():
     # Verify cogs directory exists
