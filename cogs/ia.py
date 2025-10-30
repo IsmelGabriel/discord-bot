@@ -18,3 +18,6 @@ class IA(commands.Cog):
         server_id = ctx.guild.id if ctx.guild else 0
         clear_history(server_id, ctx.author.id)
         await ctx.send("🧠 Memory cleared successfully.")
+
+async def setup(bot):
+    await bot.add_cog(IA(bot))
