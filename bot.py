@@ -15,11 +15,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Try to import config, handle missing file
-try:
+"""try:
     import config
 except ImportError:
     logger.error("config.py file not found! Please create one with your DISCORD_TOKEN")
-    sys.exit(1)
+    sys.exit(1)"""
 
 intents = discord.Intents.default()
 intents.message_content = True
