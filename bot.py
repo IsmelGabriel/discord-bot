@@ -5,6 +5,10 @@ import os
 import sys
 import logging
 from utils.logger import setup_logger
+import webserver
+
+# Get token from os environment variable for security
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -58,14 +62,15 @@ async def load_cogs():
             except Exception as e:
                 logger.error(f"Failed to load extension {filename}: {str(e)}")
 
+webserver.keep_alive()
 async def main():
     try:
         async with bot:
             await load_cogs()
-            if not config.DISCORD_TOKEN:
+            if not DISCORD_TOKEN:
                 logger.error("No Discord token found in config.py!")
                 return
-            await bot.start(config.DISCORD_TOKEN)
+            await bot.start(DISCORD_TOKEN)
     except discord.LoginFailure:
         logger.error("Invalid Discord token!")
     except Exception as e:
