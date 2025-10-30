@@ -37,7 +37,7 @@ def generate_response(server_id: int, user_id: int, prompt: str) -> str:
     response = client.chat.completions.create(
         model="gpt-4.1-mini",
         messages=messages,
-        max_tokens=200,
+        max_tokens=150,
         temperature=0.7
     )
 
