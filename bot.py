@@ -56,7 +56,8 @@ async def on_message(message):
             await message.channel.send("Hello! How can I assist you today?")
         else:
             await message.channel.typing()
-            response = generate_response(message.author.id, prompt)
+            server_id = message.guild.id if message.guild else 0
+            response = generate_response(server_id, message.author.id, prompt)
             await message.channel.send(response)
 
     await bot.process_commands(message)
