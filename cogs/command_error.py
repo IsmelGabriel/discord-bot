@@ -7,13 +7,13 @@ class CommandsError(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
-            await ctx.send("❌ Comando no encontrado. Usa `=help` para ver los comandos disponibles.")
+            await ctx.send("❌ Command not found. Type =help command for more info on a command.")
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("❌ Faltan argumentos para este comando. Por favor, revisa la sintaxis.")
+            await ctx.send("❌ Command missing required arguments.")
         elif isinstance(error, commands.CheckFailure):
-            await ctx.send("❌ No tienes permiso para usar este comando.")
+            await ctx.send("❌ You do not have permission to use this command.")
         else:
-            await ctx.send("❌ Ha ocurrido un error al ejecutar el comando.")
+            await ctx.send("❌ An error occurred while processing the command.")
             raise error  # Re-raise the error for logging purposes
         
 async def setup(bot):

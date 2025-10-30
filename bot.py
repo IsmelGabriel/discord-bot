@@ -29,12 +29,12 @@ bot = commands.Bot(command_prefix="=", intents=intents)
 
 @bot.event
 async def on_ready():
-    logger.info(f"Bot conectado como {bot.user}")
-    logger.info(f"Bot ID: {bot.user.id}")
+    logger.info(f"Bot is online: '{bot.user}'")
+    logger.info(f"Bot ID: '{bot.user.id}'")
     
 @bot.event
 async def on_command_error(ctx, error):
-    logger.error(f"Error en el comando '{ctx.command}': {str(error)}")
+    logger.error(f"Command error: '{ctx.command}': {str(error)}")
 
 @bot.event
 async def on_message(message):
@@ -73,7 +73,7 @@ async def main():
         async with bot:
             await load_cogs()
             if not DISCORD_TOKEN:
-                logger.error("No Discord token found in config.py!")
+                logger.error("No Discord token found!")
                 return
             await bot.start(DISCORD_TOKEN)
     except discord.LoginFailure:
