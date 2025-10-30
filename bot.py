@@ -5,7 +5,7 @@ import os
 import sys
 import logging
 from utils.logger import setup_logger
-import webserver
+# import webserver
 
 # Get token from os environment variable for security
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -62,7 +62,7 @@ async def load_cogs():
             except Exception as e:
                 logger.error(f"Failed to load extension {filename}: {str(e)}")
 
-webserver.keep_alive()
+# webserver.keep_alive()
 async def main():
     try:
         async with bot:
