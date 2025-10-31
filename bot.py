@@ -41,6 +41,9 @@ async def on_command_error(ctx, error):
 async def on_message(message):
     if message.author.bot:
         return
+    
+    if not message.guild:
+        return
 
     guardar_log(
         level="INFO",
