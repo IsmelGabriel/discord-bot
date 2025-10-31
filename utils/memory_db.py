@@ -1,39 +1,29 @@
-import os
-import psycopg2
-from psycopg2.extras import RealDictCursor
-from contextlib import closing
-
-DB_CONFIG = {
-    "dbname": os.getenv("DB_NAME"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASS"),
-    "host": os.getenv("DB_HOST"),
-    "port": os.getenv("DB_PORT", 5432)
-}
+from utils.db import execute_query, fetch_query  # Importamos las funciones del módulo db
 
 def save_message(server_id: int, user_id: int, role: str, content: str):
-    """Saves a message in the database."""
-    with closing(psycopg2.connect(**DB_CONFIG)) as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                "INSERT INTO memories (server_id, user_id, role, content) VALUES (%s, %s, %s, %s)",
-                (server_id, user_id, role, content)
-            )
-            conn.commit()
+    """Guarda un mensaje en la base de datos."""
+    query = """
+        INSERT INTO memories (server_id, user_id, role, content)
+        VALUES (%s, %s, %s, %s)
+    """
+    params = (server_id, user_id, role, content)
+    execute_query(query, params)
+
 
 def get_history(server_id: int, user_id: int):
-    """Gets the conversation history of a user within a server."""
-    with closing(psycopg2.connect(**DB_CONFIG)) as conn:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute(
-                "SELECT role, content FROM memories WHERE server_id = %s AND user_id = %s ORDER BY id ASC",
-                (server_id, user_id)
-            )
-            return cur.fetchall()
+    """Obtiene el historial de conversación de un usuario en un servidor."""
+    query = """
+        SELECT role, content
+        FROM memories
+        WHERE server_id = %s AND user_id = %s
+        ORDER BY id ASC
+    """
+    params = (server_id, user_id)
+    return fetch_query(query, params) or []
+
 
 def clear_history(server_id: int, user_id: int):
-    """Clears a user's memory in a specific server."""
-    with closing(psycopg2.connect(**DB_CONFIG)) as conn:
-        with conn.cursor() as cur:
-            cur.execute("DELETE FROM memories WHERE server_id = %s AND user_id = %s", (server_id, user_id))
-            conn.commit()
+    """Limpia la memoria de un usuario en un servidor."""
+    query = "DELETE FROM memories WHERE server_id = %s AND user_id = %s"
+    params = (server_id, user_id)
+    execute_query(query, params)
