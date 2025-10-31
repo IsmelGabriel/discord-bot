@@ -58,7 +58,8 @@ async def on_message(message):
             await message.channel.typing()
             server_id = message.guild.id if message.guild else 0
             response = generate_response(server_id, message.author.id, prompt)
-            await message.channel.send(response + "")
+            user = message.author.mention
+            await message.channel.send(response + f"\n{user}")
 
 
     await bot.process_commands(message)
