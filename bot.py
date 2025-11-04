@@ -33,6 +33,14 @@ async def on_ready():
     logger.info(f"Bot is online: '{bot.user}'")
     logger.info(f"Bot ID: '{bot.user.id}'")
     
+    server_count = len(bot.guilds)
+    logger.info(f"Connected to {server_count} servers.")
+    
+    # List servers
+    for guild in bot.guilds:
+        logger.info(f" - {guild.name} (ID: {guild.id})")
+    
+    
 @bot.event
 async def on_command_error(ctx, error):
     logger.error(f"Command error: '{ctx.command}': {str(error)}")
