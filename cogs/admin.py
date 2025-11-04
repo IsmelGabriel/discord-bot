@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from utils.prompt_db import update_prompt
 
 class Admin(commands.Cog):
     def __init__(self, bot):
@@ -38,6 +39,15 @@ class Admin(commands.Cog):
     async def ban(self, ctx, member: commands.MemberConverter, *, reason=None):
         await member.ban(reason=reason)
         await ctx.send(f"{member.mention} has been banned.")
+        
+    @commands.has_permissions(administrator=True)
+    @commands.command(name="setprompt", help="Set a custom AI prompt for this server.")
+    async def set_prompt(self, ctx, *, new_prompt: str):
+        server_id = ctx.guild.id if ctx.guild else None
+        if update_prompt(server_id, "default", new_prompt):
+            await ctx.send("✅ Prompt actualizado para este servidor.")
+        else:
+            await ctx.send("❌ Error al actualizar el prompt.")
     
 async def setup(bot):
     await bot.add_cog(Admin(bot))

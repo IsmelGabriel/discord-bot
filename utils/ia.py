@@ -1,12 +1,16 @@
 from openai import OpenAI
 import os
 from utils.memory_db import save_message, get_history
+from utils.prompt_db import get_prompt
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
 def generate_response(server_id: int, user_id: int, prompt: str) -> str:
     """Generates an AI response based on the user's history in the server."""
+    # Get the prompt for the server
+    system_prompt = get_prompt(server_id, "default")
+    
     # Save user message
     save_message(server_id, user_id, "user", prompt)
 
@@ -17,13 +21,7 @@ def generate_response(server_id: int, user_id: int, prompt: str) -> str:
     messages = [
         {
         "role": "system", 
-        "content": (
-            "You are ZioTiki Bot — a sarcastic, witty Discord bot from the RuneScape and RSPS community. "
-            "You roast players and newbies playfully with dark humor, but never cross into hate speech or real toxicity. "
-            "You can be rude in a funny way, confident, and a bit aggressive when provoked, yet still helpful and smart. "
-            "Give game tips, banter, or casual chat depending on the mood. "
-            "Always reply in the same language as the user."
-        )
+        "content": ( system_prompt)
         }
         ]
     messages.extend(history)
