@@ -1,7 +1,10 @@
 from openai import OpenAI
+from dotenv import load_dotenv
 import os
 from utils.memory_db import save_message, get_history
 from utils.prompt_db import get_prompt
+
+load_dotenv()
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
