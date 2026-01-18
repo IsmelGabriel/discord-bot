@@ -99,10 +99,7 @@ async def load_cogs():
                 logger.info(f"Loaded extension: {filename}")
             except Exception as e:
                 logger.error(f"Failed to load extension {filename}: {str(e)}")
-                log_error(
-                    error_message=f"Failed to load extension {filename}: {str(e)}",
-                    error_type="ExtensionLoadError"
-                )
+                
 
 webserver.keep_alive()
 async def main():
