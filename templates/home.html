@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ziotiki Bot</title>
+</head>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        text-align: center;
+        padding: 50px;
+    }
+
+    h2 {
+        color: #4CAF50;
+    }
+
+    p {
+        font-size: 18px;
+    }
+
+    table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+</style>
+
+<body>
+    <h2>Ziotiki Bot</h2>
+    <p>Status: {{ bot_status["status"] }}</p>
+    <p>Last Restart: {{ bot_status["last_restart"] }}</p>
+    <p>Current Activity: {{ bot_status["activity"] }}</p>
+
+    <h3>Recent Error Logs</h3>
+    <table>
+        <tr>
+            <th>Tipo</th>
+            <th>Server ID</th>
+            <th>User ID</th>
+            <th>Mensaje</th>
+            <th>Fecha</th>
+        </tr>
+        {% if error_logs %}
+        {% for log in error_logs %}
+        <tr>
+            <td><strong>{{ log.get('error_type', 'Unknown') }}</strong></td>
+            <td>{{ log.server_id or '-' }}</td>
+            <td>{{ log.get('user_id', '-') or '-' }}</td>
+            <td>{{ log.error_message[:80] }}{% if log.error_message|length > 80 %}...{% endif %}</td>
+            <td>{{ log.created_at }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="5">No error logs found.</td>
+        </tr>
+        {% endif %}
+    </table>
+
+    <h3>Last Prompt Update</h3>
+    <table>
+        <tr>
+            <th>Server ID</th>
+            <th>Name</th>
+            <th>Content</th>
+            <th>Updated At</th>
+        </tr>
+        {% if prompts %}
+        {% for prompt in prompts %}
+        <tr>
+            <td>{{ prompt.server_id }}</td>
+            <td>{{ prompt.name }}</td>
+            <td>{{ prompt.content[:100] }}...</td>
+            <td>{{ prompt.updated_at }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="4">No prompt updates found.</td>
+        </tr>
+        {% endif %}
+    </table>
+
+</body>
+</html>

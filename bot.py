@@ -1,12 +1,14 @@
 import discord
-from discord.ext import commands
 import asyncio
 import os
 import sys
 import logging
+import webserver
+from discord.ext import commands
 from utils.logger_db import guardar_log
 from utils.ia import generate_response
-import webserver
+from utils.error_logs_db import log_error, log_command_error, log_ai_error, log_database_error
+from utils.bot_status import bot_status
 
 # Get token from os environment variable for security
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -26,6 +28,8 @@ bot = commands.Bot(command_prefix="=", intents=intents)
 async def on_ready():
     logger.info(f"Bot is online: '{bot.user}'")
     logger.info(f"Bot ID: '{bot.user.id}'")
+    bot_status["status"] = "Online"
+    bot_status["last_restart"] = discord.utils.utcnow().strftime("%Y-%m-%d %H:%M:%S")
     
     server_count = len(bot.guilds)
     logger.info(f"Connected to {server_count} servers.")
@@ -38,6 +42,8 @@ async def on_ready():
 @bot.event
 async def on_command_error(ctx, error):
     logger.error(f"Command error: '{ctx.command}': {str(error)}")
+    # Registrar el error en la base de datos
+    log_command_error(ctx, error)
 
 @bot.event
 async def on_message(message):
@@ -62,9 +68,17 @@ async def on_message(message):
         else:
             await message.channel.typing()
             server_id = message.guild.id if message.guild else 0
-            response = generate_response(server_id, message.author.id, prompt)
-            user = message.author.mention
-            await message.channel.send(response + f"\n{user}")
+            try:
+                response = generate_response(server_id, message.author.id, prompt)
+                user = message.author.mention
+                await message.channel.send(response + f"\n{user}")
+            except Exception as e:
+                log_ai_error(
+                    error_message=str(e),
+                    server_id=server_id,
+                    user_id=message.author.id
+                )
+                await message.channel.send("❌ Ha ocurrido un error procesando tu solicitud.")
 
 
     await bot.process_commands(message)
@@ -84,6 +98,10 @@ async def load_cogs():
                 logger.info(f"Loaded extension: {filename}")
             except Exception as e:
                 logger.error(f"Failed to load extension {filename}: {str(e)}")
+                log_error(
+                    error_message=f"Failed to load extension {filename}: {str(e)}",
+                    error_type="ExtensionLoadError"
+                )
 
 webserver.keep_alive()
 async def main():
