@@ -37,6 +37,8 @@ def update_prompt(server_id, name, content):
     conn = conectar()
     if not conn:
         return False
+    
+    fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     try:
         with conn.cursor() as cur:

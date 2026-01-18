@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from utils.db import execute_query  # ✅ usamos tu conexión centralizada
+from utils.db import execute_query
 
 def detectar_tipo_contenido(mensaje: str) -> str:
     """Detecta si el mensaje contiene imagen, video, link o texto."""
@@ -27,6 +27,6 @@ def guardar_log(level: str, server_id: int, author_id: int, author_name: str, me
     """
     params = (level, server_id, author_id, author_name, mensaje, tipo, fecha_hora)
 
-    execute_query(query, params)  # ✅ conexión y commit automáticos
+    execute_query(query, params)
 
     print(f"[{fecha_hora}] ({level}) {author_name}: {mensaje} [{tipo}]")
