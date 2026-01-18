@@ -1,4 +1,5 @@
 from utils.db import conectar
+from datetime import datetime
 
 def get_prompt(server_id=None, name="default"):
     """Obtiene el prompt de un servidor. Si no existe, usa el prompt global."""
@@ -39,17 +40,17 @@ def update_prompt(server_id, name, content):
         return False
     
     fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
+    
     try:
         with conn.cursor() as cur:
             cur.execute(
                 """
-                INSERT INTO prompts (server_id, name, content)
-                VALUES (%s, %s, %s)
+                INSERT INTO prompts (server_id, name, content, updated_at)
+                VALUES (%s, %s, %s, %s)
                 ON CONFLICT (server_id, name)
-                DO UPDATE SET content = EXCLUDED.content, updated_at = NOW();
+                DO UPDATE SET content = EXCLUDED.content, updated_at = EXCLUDED.updated_at;
                 """,
-                (server_id, name, content),
+                (server_id, name, content, fecha_hora),
             )
             conn.commit()
             print(f"[PROMPT] '{name}' actualizado para server {server_id or 'global'}.")

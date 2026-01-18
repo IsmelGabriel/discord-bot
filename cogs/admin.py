@@ -44,7 +44,8 @@ class Admin(commands.Cog):
     @commands.command(name="setprompt", help="Set a custom AI prompt for this server.")
     async def set_prompt(self, ctx, *, new_prompt: str):
         server_id = ctx.guild.id if ctx.guild else None
-        if update_prompt(server_id, "default", new_prompt):
+        server_name = ctx.guild.name if ctx.guild else "Direct Message"
+        if update_prompt(server_id, server_name, new_prompt):
             await ctx.send("✅ Prompt actualizado para este servidor.")
         else:
             await ctx.send("❌ Error al actualizar el prompt.")

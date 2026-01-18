@@ -1,3 +1,4 @@
+from discord import datetime
 from utils.db import conectar
 import traceback
 
@@ -18,16 +19,18 @@ def log_error(error_message, server_id=None, user_id=None, error_type="Unknown",
     conn = conectar()
     if not conn:
         print("[ERROR] No se pudo conectar a la base de datos para registrar el error.")
-        return False
+        return 
+    
+    fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     try:
         with conn.cursor() as cur:
             # Verificar si la tabla tiene la columna stack_trace
             query = """
                 INSERT INTO error_logs (server_id, user_id, error_type, error_message, stack_trace, created_at)
-                VALUES (%s, %s, %s, %s, %s, NOW())
+                VALUES (%s, %s, %s, %s, %s, %s);
             """
-            params = (server_id, user_id, error_type, error_message, stack_trace)
+            params = (server_id, user_id, error_type, error_message, stack_trace, fecha_hora)
             
             cur.execute(query, params)
             conn.commit()
