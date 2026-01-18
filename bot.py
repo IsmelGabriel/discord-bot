@@ -9,6 +9,7 @@ from utils.logger_db import guardar_log
 from utils.ia import generate_response
 from utils.error_logs_db import log_error, log_command_error, log_ai_error, log_database_error
 from utils.bot_status import bot_status
+from datetime import datetime
 
 # Get token from os environment variable for security
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -29,7 +30,7 @@ async def on_ready():
     logger.info(f"Bot is online: '{bot.user}'")
     logger.info(f"Bot ID: '{bot.user.id}'")
     bot_status["status"] = "Online"
-    bot_status["last_restart"] = discord.utils.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    bot_status["last_restart"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     server_count = len(bot.guilds)
     logger.info(f"Connected to {server_count} servers.")
