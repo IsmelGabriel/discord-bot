@@ -67,10 +67,10 @@ def update_prompt(server_id, name, content):
         with conn.cursor() as cur:
             cur.execute(
                 """
-                INSERT INTO prompts (server_id, name, content, update_at)
+                INSERT INTO prompts (server_id, name, content, updated_at)
                 VALUES (%s, %s, %s, %s)
                 ON CONFLICT (server_id, name)
-                DO UPDATE SET content = EXCLUDED.content, update_at = EXCLUDED.update_at;
+                DO UPDATE SET content = EXCLUDED.content, updated_at = EXCLUDED.updated_at;
                 """,
                 (server_id, name, content, fecha_hora),
             )

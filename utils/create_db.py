@@ -53,7 +53,7 @@ def create_tables():
                 server_id BIGINT,
                 name VARCHAR(100) NOT NULL,
                 content TEXT NOT NULL,
-                update_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE (server_id, name)
             )
         """
