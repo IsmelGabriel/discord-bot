@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from threading import Thread
 from utils.bot_status import bot_status
 from utils.db import conectar
@@ -71,6 +71,10 @@ def home():
     error_logs = get_error_logs()
     prompts_update = get_lasts_prompt_update()
     return render_template("home.html", bot_status=bot_status, error_logs=error_logs, prompts=prompts_update)
+
+@app.route('/api/ping')
+def api_ping():
+    return jsonify({"ping": bot_status["ping"]})
 
 
 def run():

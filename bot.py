@@ -4,11 +4,12 @@ import os
 import sys
 import logging
 import webserver
-from discord.ext import commands
+from discord.ext import commands, tasks
 from utils.logger_db import guardar_log
 from utils.ia import generate_response
 from utils.error_logs_db import log_error, log_command_error, log_ai_error, log_database_error
 from utils.bot_status import bot_status
+from cogs.general import General
 from datetime import datetime
 
 # Get token from os environment variable for security
@@ -31,6 +32,7 @@ async def on_ready():
     logger.info(f"Bot ID: '{bot.user.id}'")
     bot_status["status"] = "Online"
     bot_status["last_restart"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    bot_status["ping"] = round(bot.latency * 1000)
     
     server_count = len(bot.guilds)
     logger.info(f"Connected to {server_count} servers.")
@@ -38,6 +40,15 @@ async def on_ready():
     # List servers
     for guild in bot.guilds:
         logger.info(f" - {guild.name} (ID: {guild.id})")
+    
+    # Iniciar tarea de actualización de ping
+    if not update_ping.is_running():
+        update_ping.start()
+
+@tasks.loop(minutes=5)
+async def update_ping():
+    """Actualiza el ping del bot cada 5 minutos."""
+    bot_status["ping"] = round(bot.latency * 1000)
     
     
 @bot.event
