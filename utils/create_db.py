@@ -50,10 +50,11 @@ def create_tables():
         """
             CREATE TABLE IF NOT EXISTS prompts (
                 id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-                server_id BIGINT NOT NULL,
+                server_id BIGINT,
                 name VARCHAR(100) NOT NULL,
                 content TEXT NOT NULL,
-                update_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                update_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (server_id, name)
             )
         """
     ]
