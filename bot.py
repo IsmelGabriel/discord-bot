@@ -5,6 +5,11 @@ import logging
 import discord
 import asyncio
 from discord.ext import commands, tasks
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 import webserver
 from utils.logger_db import guardar_log
 from utils.ia import generate_response
@@ -13,6 +18,7 @@ from utils.bot_status import bot_status
 
 # Get token from os environment variable for security
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+TESTING_MODE = os.getenv("TESTING_MODE", "False").lower() == "true"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -116,7 +122,24 @@ async def load_cogs():
             except Exception as e:
                 logger.error(f"Failed to load extension {filename}: {str(e)}")
 
+_bot_started = False
+
 def start_bot():
+    global _bot_started
+    if _bot_started:
+        logger.warning("Bot is already running!")
+        return
+    if TESTING_MODE:
+        logger.info("Bot is running in TESTING MODE.")
+        async def test_runner():
+            async with bot:
+                await load_cogs()
+                if not DISCORD_TOKEN:
+                    logger.error("No Discord token found!")
+                    return
+                await bot.start(DISCORD_TOKEN)
+        asyncio.run(test_runner())
+        return
     async def runner():
         async with bot:
             await load_cogs()

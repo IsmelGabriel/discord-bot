@@ -46,22 +46,27 @@
 
 <body>
     <h2>Ziotiki Bot</h2>
-    <p>Status: {{ bot_status["status"] }} | Ping: <span id="ping">{{ bot_status["ping"] }}</span> ms</p>
-    <p>Last Restart: {{ bot_status["last_restart"] }}</p>
-    <p>Current Activity: {{ bot_status["activity"] }}</p>
+    <p>Status: <span id="status">{{ bot_status["status"] }}</span> | Ping: <span id="ping">{{ bot_status["ping"] }}</span> ms</p>
+    <p>Last Restart: <span id="last_restart">{{ bot_status["last_restart"] }}</span></p>
+    <p>Current Activity: <span id="activity">{{ bot_status["activity"] }}</span></p>
     <p>Invite bot to server: <a href="https://discord.com/oauth2/authorize?client_id=1318670732380864554&&permissions=8&scope=bot">INVITE</a></p>
 
     <script>
-        function updatePing() {
-            fetch('/api/ping')
+        function updateStatus() {
+            fetch('/api/status')
                 .then(response => response.json())
                 .then(data => {
+                    document.getElementById('status').textContent = data.status;
                     document.getElementById('ping').textContent = data.ping;
+                    document.getElementById('last_restart').textContent = data.last_restart || 'N/A';
+                    document.getElementById('activity').textContent = data.activity;
                 })
                 .catch(error => console.error('Error:', error));
         }
-        // Actualizar cada 5 minutos (300000 ms)
-        setInterval(updatePing, 300000);
+        // Actualizar al cargar la página
+        updateStatus();
+        // Actualizar cada 30 segundos
+        setInterval(updateStatus, 30000);
     </script>
 
     <h3>Recent Error Logs</h3>

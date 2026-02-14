@@ -77,3 +77,8 @@ def home():
 @app.route('/api/ping')
 def api_ping():
     return jsonify({"ping": bot_status["ping"]})
+
+@app.route('/api/status')
+def api_status():
+    """Endpoint para obtener todo el estado del bot."""
+    return jsonify(bot_status)
