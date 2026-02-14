@@ -1,5 +1,5 @@
 import os
-from threading import Thread
+import threading
 from datetime import datetime
 import logging
 import discord
