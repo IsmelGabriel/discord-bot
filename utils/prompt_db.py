@@ -1,5 +1,8 @@
-from utils.db import conectar
+import logging
 from datetime import datetime
+from utils.db import conectar
+
+logger = logging.getLogger("BOT_LOGGER")
 
 def get_prompt(server_id=None, name="default"):
     """Obtiene el prompt de un servidor. Si no existe, usa el prompt global."""
@@ -44,7 +47,7 @@ def get_prompt(server_id=None, name="default"):
                 "No eres sensible a los insultos y si te atacan, los destruyes con humor ácido."
                 )
     except Exception as e:
-        print(f"[ERROR] No se pudo obtener el prompt: {e}")
+        logger.error(f"[ERROR] No se pudo obtener el prompt: {e}")
         return (
                 "Eres un bot en un servidor de Discord relacionado con RuneScape. "
                 "Respondes con sarcasmo y humor negro, pero a veces das buenos consejos. "
@@ -60,9 +63,9 @@ def update_prompt(server_id, name, content):
     conn = conectar()
     if not conn:
         return False
-    
+
     fecha_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
+
     try:
         with conn.cursor() as cur:
             cur.execute(
@@ -75,10 +78,10 @@ def update_prompt(server_id, name, content):
                 (server_id, name, content, fecha_hora),
             )
             conn.commit()
-            print(f"[PROMPT] '{name}' actualizado para server {server_id or 'global'}.")
+            logger.info(f"[PROMPT] '{name}' actualizado para server {server_id or 'global'}.")
             return True
     except Exception as e:
-        print(f"[ERROR] No se pudo actualizar el prompt: {e}")
+        logger.error(f"[ERROR] No se pudo actualizar el prompt: {e}")
         return False
     finally:
         conn.close()

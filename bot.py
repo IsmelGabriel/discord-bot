@@ -1,16 +1,15 @@
+import os
+from threading import Thread
+from datetime import datetime
+import logging
 import discord
 import asyncio
-import os
-import sys
-import logging
-import webserver
 from discord.ext import commands, tasks
+import webserver
 from utils.logger_db import guardar_log
 from utils.ia import generate_response
-from utils.error_logs_db import log_error, log_command_error, log_ai_error, log_database_error
+from utils.error_logs_db import log_command_error, log_ai_error
 from utils.bot_status import bot_status
-from cogs.general import General
-from datetime import datetime
 
 # Get token from os environment variable for security
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -33,14 +32,14 @@ async def on_ready():
     bot_status["status"] = "Online"
     bot_status["last_restart"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     bot_status["ping"] = round(bot.latency * 1000)
-    
+
     server_count = len(bot.guilds)
     logger.info(f"Connected to {server_count} servers.")
-    
+
     # List servers
     for guild in bot.guilds:
         logger.info(f" - {guild.name} (ID: {guild.id})")
-    
+
     # Iniciar tarea de actualización de ping
     if not update_ping.is_running():
         update_ping.start()
@@ -49,8 +48,8 @@ async def on_ready():
 async def update_ping():
     """Actualiza el ping del bot cada 5 minutos."""
     bot_status["ping"] = round(bot.latency * 1000)
-    
-    
+
+
 @bot.event
 async def on_command_error(ctx, error):
     logger.error(f"Command error: '{ctx.command}': {str(error)}")
@@ -61,7 +60,7 @@ async def on_command_error(ctx, error):
 async def on_message(message):
     if message.author.bot:
         return
-    
+
     if not message.guild:
         return
 
@@ -72,11 +71,15 @@ async def on_message(message):
         author_name=str(message.author),
         mensaje=message.content
     )
-    
+
     if bot.user in message.mentions and not message.mention_everyone:
         prompt = message.content.replace(f"<@{bot.user.id}>", "").replace(f"<@!{bot.user.id}>", "").strip()
         if not prompt:
             await message.channel.send("👋 Hello! How can I assist you today?")
+
+        if len(prompt) > 300:
+            await message.channel.send("⚠️ Your message is too long! Please keep it under 300 characters.")
+
         else:
             await message.channel.typing()
             server_id = message.guild.id if message.guild else 0
@@ -90,8 +93,10 @@ async def on_message(message):
                     server_id=server_id,
                     user_id=message.author.id
                 )
-                await message.channel.send("❌ Ha ocurrido un error procesando tu solicitud.")
-
+                await message.channel.send(
+                    "El sistema de IA no esta disponible en este \
+                    momento o se encuentra en mantenimiento!"
+                    )
 
     await bot.process_commands(message)
 
@@ -110,26 +115,18 @@ async def load_cogs():
                 logger.info(f"Loaded extension: {filename}")
             except Exception as e:
                 logger.error(f"Failed to load extension {filename}: {str(e)}")
-                
 
-webserver.keep_alive()
-async def main():
-    try:
+def start_bot():
+    async def runner():
         async with bot:
             await load_cogs()
             if not DISCORD_TOKEN:
                 logger.error("No Discord token found!")
                 return
             await bot.start(DISCORD_TOKEN)
-    except discord.LoginFailure:
-        logger.error("Invalid Discord token!")
-    except Exception as e:
-        logger.error(f"An error occurred: {str(e)}")
 
-if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        logger.info("Bot shutdown by user")
-    except Exception as e:
-        logger.error(f"Fatal error: {str(e)}")
+    asyncio.run(runner())
+
+def run_bot_thread():
+    thread = threading.Thread(target=start_bot, daemon=True)
+    thread.start()

@@ -1,10 +1,12 @@
 config.py
 logs/*
-__pycache__/*
-utils/__pycache__/*
-cogs/__pycache__/*
-data/__pycache__/*
+__pycache__/
+utils/__pycache__/
+cogs/__pycache__/
+data/__pycache__/
 __pycache__/*
 .venv/
 .env
 test.py
+db/
+.vscode/

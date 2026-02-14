@@ -1,6 +1,6 @@
-from openai import OpenAI
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
+from openai import OpenAI
 from utils.memory_db import save_message, get_history
 from utils.prompt_db import get_prompt
 
@@ -13,7 +13,7 @@ def generate_response(server_id: int, user_id: int, prompt: str) -> str:
     """Generates an AI response based on the user's history in the server."""
     # Get the prompt for the server
     system_prompt = get_prompt(server_id, "default")
-    
+
     # Save user message
     save_message(server_id, user_id, "user", prompt)
 
@@ -23,7 +23,7 @@ def generate_response(server_id: int, user_id: int, prompt: str) -> str:
     # Build context
     messages = [
         {
-        "role": "system", 
+        "role": "system",
         "content": ( system_prompt)
         }
         ]

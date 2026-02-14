@@ -1,8 +1,10 @@
-from flask import Flask, render_template, jsonify
-from threading import Thread
-from utils.bot_status import bot_status
-from utils.db import conectar
 from psycopg2.extras import RealDictCursor
+from utils.db import conectar
+from flask import Flask, render_template, jsonify
+from utils.bot_status import bot_status
+from bot import run_bot_thread
+
+run_bot_thread()
 
 app = Flask(__name__)
 
@@ -17,15 +19,15 @@ def get_error_logs():
             # Intentar obtener todas las columnas disponibles
             cur.execute(
                 """
-                SELECT 
-                    server_id, 
-                    user_id, 
-                    error_type, 
-                    error_message, 
+                SELECT
+                    server_id,
+                    user_id,
+                    error_type,
+                    error_message,
                     created_at,
                     CASE WHEN stack_trace IS NOT NULL THEN TRUE ELSE FALSE END as has_stack_trace
-                FROM error_logs 
-                ORDER BY created_at DESC 
+                FROM error_logs
+                ORDER BY created_at DESC
                 LIMIT 10;
                 """
             )
@@ -46,7 +48,7 @@ def get_error_logs():
             return []
     finally:
         conn.close()
-        
+
 def get_lasts_prompt_update():
     """Obtiene las últimas 5 actualizaciones de prompts."""
     conn = conectar()
@@ -75,11 +77,3 @@ def home():
 @app.route('/api/ping')
 def api_ping():
     return jsonify({"ping": bot_status["ping"]})
-
-
-def run():
-    app.run(host='0.0.0.0', port=8080)
-    
-def keep_alive():
-    t = Thread(target=run)
-    t.start()
