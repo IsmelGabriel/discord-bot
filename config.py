@@ -19,11 +19,11 @@ TESTING_MODE = os.getenv("TESTING_MODE", "False").lower() == "true"
 
 # ── Base de datos (PostgreSQL) ──────────────────────────────────────
 DB_CONFIG = {
-    "dbname": os.getenv("dbname"),
-    "user": os.getenv("user"),
-    "password": os.getenv("password"),
-    "host": os.getenv("host"),
-    "port": int(os.getenv("port", 5432)),
+    "dbname": os.getenv("db_name"),
+    "user": os.getenv("db_user"),
+    "password": os.getenv("db_password"),
+    "host": os.getenv("db_host"),
+    "port": int(os.getenv("db_port", 5432)),
 }
 
 # ── OpenAI ──────────────────────────────────────────────────────────
