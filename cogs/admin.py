@@ -29,14 +29,20 @@ class Admin(commands.Cog):
         muted_role = discord.utils.get(interaction.guild.roles, name="MemMuted")
         if not muted_role:
             await interaction.response.defer()
-            muted_role = await interaction.guild.create_role(name="MemMuted")
+            permissions = discord.Permissions(send_messages=False, speak=False)
+            muted_role = await interaction.guild.create_role(name="MemMuted", permissions=permissions)
+
+            # Aplicar permisos por categoría (antes era por cada canal)
+            for category in interaction.guild.categories:
+                await category.set_permissions(
+                    muted_role, speak=False, send_messages=False, read_message_history=True, read_messages=False
+                )
+
+            # Aplicar a canales sueltos
             for channel in interaction.guild.channels:
-                await channel.set_permissions(
-                    muted_role,
-                    speak=False,
-                    send_messages=False,
-                    read_message_history=True,
-                    read_messages=False
+                if channel.category is None:
+                    await channel.set_permissions(
+                        muted_role, speak=False, send_messages=False, read_message_history=True, read_messages=False
                     )
             await member.add_roles(muted_role)
             await interaction.followup.send(f"{member.mention} has been muted.")
@@ -81,6 +87,49 @@ class Admin(commands.Cog):
             await interaction.response.send_message("✅ Prompt actualizado para este servidor.")
         else:
             await interaction.response.send_message("❌ Error al actualizar el prompt.", ephemeral=True)
+
+    @app_commands.command(name="update_announce", description="(Owner Only) Anuncia una actualización en todos los servidores.")
+    async def update_announce(self, interaction: discord.Interaction, version: str, notas: str):
+        # 1. Verificar que SOLO el dueño del bot pueda usar esto
+        is_owner = await self.bot.is_owner(interaction.user)
+        if not is_owner:
+            await interaction.response.send_message("❌ Solo el dueño del bot puede usar este comando.", ephemeral=True)
+            return
+
+        await interaction.response.defer(ephemeral=True)
+
+        # 2. Crear la tarjeta de anuncio
+        notas_formateadas = notas.replace("\\n", "\n")
+
+        embed = discord.Embed(
+            title=f"🚀 Actualización del Sistema: v{version}",
+            description=f"**Notas del parche:**\n{notas_formateadas}",
+            color=discord.Color.brand_red()
+        )
+        embed.set_footer(text="ZioTiki Bot Core Update")
+
+        servers_notified = 0
+
+        # 3. Iterar por todos los servidores
+        for guild in self.bot.guilds:
+            target_channel = guild.system_channel
+
+            if target_channel is None:
+                for c in guild.text_channels:
+                    # Busca el mejor canal para anunciarlo
+                    if any(palabra in c.name.lower() for palabra in ["actualizaciones", "noticias", "admin", "general"]):
+                        target_channel = c
+                        break
+
+            # 4. Enviar el mensaje si encontró un canal donde tenga permisos
+            if target_channel:
+                try:
+                    await target_channel.send(embed=embed)
+                    servers_notified += 1
+                except discord.Forbidden:
+                    pass # El bot no tiene permisos de escritura en ese canal
+
+        await interaction.followup.send(f"✅ Anuncio de actualización (v{version}) enviado exitosamente a **{servers_notified}** servidores.")
 
 async def setup(bot):
     await bot.add_cog(Admin(bot))

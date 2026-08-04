@@ -105,8 +105,8 @@ async def on_message(message):
             async with message.channel.typing():
                 server_id = message.guild.id if message.guild else 0
                 try:
-                    response = await asyncio.to_thread(
-                        generate_response, server_id, message.author.id, prompt
+                    response = await generate_response(
+                        server_id, message.author.id, prompt
                     )
                     user = message.author.mention
                     await message.channel.send(response + f"\n{user}")

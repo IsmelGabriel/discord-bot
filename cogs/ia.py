@@ -23,8 +23,8 @@ class IA(commands.Cog):
         await interaction.response.defer()
         server_id = interaction.guild_id if interaction.guild else 0
         try:
-            response = await asyncio.to_thread(
-                generate_response, server_id, interaction.user.id, question
+            response = await generate_response(
+                server_id, interaction.user.id, question
             )
             await interaction.followup.send(response)
         except Exception as e:

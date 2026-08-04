@@ -1,16 +1,16 @@
 import logging
 
-from openai import OpenAI, APIError, RateLimitError, APITimeoutError
+from openai import AsyncOpenAI, APIError, RateLimitError, APITimeoutError
 from config import OPENAI_API_KEY, OPENAI_MODEL
 from utils.memory_db import save_message, get_history
 from utils.prompt_db import get_prompt
 
 logger = logging.getLogger(__name__)
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 
-def generate_response(server_id: int, user_id: int, prompt: str) -> str:
+async def generate_response(server_id: int, user_id: int, prompt: str) -> str:
     """Generates an AI response based on the user's history in the server."""
     # Get the prompt for the server
     system_prompt = get_prompt(server_id, "default")
@@ -26,7 +26,7 @@ def generate_response(server_id: int, user_id: int, prompt: str) -> str:
     messages.extend(history)
 
     try:
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model=OPENAI_MODEL,
             messages=messages,
             max_tokens=150,
@@ -48,3 +48,4 @@ def generate_response(server_id: int, user_id: int, prompt: str) -> str:
     save_message(server_id, user_id, "assistant", content)
 
     return content
+

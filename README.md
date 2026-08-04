@@ -64,30 +64,30 @@ python bot.py
 
 ### Generales
 
-- `=ping` - Muestra la latencia del bot
+- `/ping` - Muestra la latencia del bot
 
 ### IA
 
-- `=ask <pregunta>` - Hace una pregunta al bot
-- `=reset` - Borra la memoria de conversación
+- `/ask <pregunta>` - Hace una pregunta al bot
+- `/reset` - Borra la memoria de conversación
 - `@<@bot_id> <mensaje>` - Menciona al bot para hablar con él
 
 ### Diversión
 
-- `=chiste` - Cuenta un chiste aleatorio
-- `=roll` - Lanza un dado de 6 caras
+- `/chiste` - Cuenta un chiste aleatorio
+- `/roll` - Lanza un dado de 6 caras
 
 ### Administración (requiere permisos)
 
-- `=mute <usuario>` - Silencia a un usuario
-- `=unmute <usuario>` - Quita el silencio a un usuario
-- `=kick <usuario> [razón]` - Expulsa a un usuario
-- `=ban <usuario> [razón]` - Banea a un usuario
-- `=setprompt <prompt>` - Configura el prompt de IA del servidor
+- `/mute <usuario>` - Silencia a un usuario
+- `/unmute <usuario>` - Quita el silencio a un usuario
+- `/kick <usuario> [razón]` - Expulsa a un usuario
+- `/ban <usuario> [razón]` - Banea a un usuario
+- `/setprompt <prompt>` - Configura el prompt de IA del servidor
 
 ## Uso
 
-Invita al bot a tu servidor y usa el prefijo `=` seguido del comando. Para hablar con la IA, menciona al bot o usa el comando `=ask`.
+Invita al bot a tu servidor y usa el menú de comandos integrados escribiendo `/`. Para hablar con la IA, menciona al bot o usa el comando `/ask`.
 
 ## Tecnologías
 

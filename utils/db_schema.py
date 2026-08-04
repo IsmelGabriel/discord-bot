@@ -101,6 +101,21 @@ SCHEMA_STATEMENTS = [
     CREATE INDEX IF NOT EXISTS idx_trivia_scores_server_points
     ON trivia_scores (server_id, points DESC);
     """,
+    # ── Leveling ────────────────────────────────────────────────────
+    """
+    CREATE TABLE IF NOT EXISTS user_levels (
+        server_id BIGINT NOT NULL,
+        user_id BIGINT NOT NULL,
+        xp BIGINT NOT NULL DEFAULT 0,
+        level INTEGER NOT NULL DEFAULT 1,
+        last_message_at TIMESTAMP,
+        PRIMARY KEY (server_id, user_id)
+    );
+    """,
+    """
+    CREATE INDEX IF NOT EXISTS idx_user_levels_server_xp
+    ON user_levels (server_id, xp DESC);
+    """,
 ]
 
 _db_init_lock = threading.Lock()
